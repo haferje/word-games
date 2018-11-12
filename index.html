@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Word Games</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="words.js"></script>
+	</head>
+	<body>
+
+		<input id="input" type="text" />
+		<br/>
+		<textarea id="output" rows="35"></textarea>
+
+		<style>
+		</style>
+
+		<script>
+			/* TODO
+				options for other games
+					allow reuse of letters
+					only containing these letters
+					words with filled in letter slots
+					minimum word length
+				improve UI
+					better display of words
+					larger input box
+					focus textbox on load
+				ability to remove words from dictionary that aren't often used
+					or tag words that are used more often
+			*/
+
+			$(function() {
+
+				$("#input").keyup(function() {
+
+					var input = $(this).val();
+
+					if (!input || input.length < 5)
+						return;
+
+					// var matches = _.filter(words, word => {
+					// 	var match = charsOnly.test(word);
+					// 	if (match)
+					// 		match = match && _.every(charCounts, (count,char) => {
+					// 			match = new RegExp(`^.?[${char}]{0,${count}}.?$`).test(word);
+					// 			return match;
+					// 		});
+					// 	return match;
+					// });
+
+					var allChars = 'abcdefghijklmnopqrstuvwxyz';
+					var nonWordChars = _.difference(allChars.split(''), input.split(''));
+					var reNonWordChars = new RegExp(`[${nonWordChars}]`);
+
+					var charCounts = _.countBy(input);
+					// ex. more than 2 'e's: /(?<=(\w*e\w*){2,})e/
+					var reCharCounts = _.map(charCounts, (count,char) => new RegExp(`(?<=(\\w*${char}\\w*){${count},})${char}`));
+
+					// search all words
+					var matches = _.filter(words, word => {
+						return (
+							word.length >= 3 &&
+							// don't match word if it contains non-input letters
+							!reNonWordChars.test(word) &&
+							// don't match word if it contains more letters than available
+							_.every(reCharCounts, reCharCount => !reCharCount.test(word))
+						);
+					});
+
+					$("#output").val(matches.join('\n'));
+
+				});
+
+			});
+		</script>
+
+	</body>
+</html>
