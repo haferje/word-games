@@ -22,34 +22,38 @@
 					only containing these letters
 					words with filled in letter slots
 					minimum word length
+					hints only
+						show scrambled words with correct first and last letter
 				improve UI
 					better display of words
 					larger input box
 					focus textbox on load
 				ability to remove words from dictionary that aren't often used
 					or tag words that are used more often
+					or a better dictionary with common words
 			*/
 
 			$(function() {
 
-				$("#input").keyup(function() {
+				// settings
+				var minInput = 5;
+				var maxInput = 7;
+				var minWordSize = 3;
+				var maxWordSize = maxInput;
+
+				var $input = $("#input");
+				var $output = $("#output");
+				var allChars = 'abcdefghijklmnopqrstuvwxyz';
+
+				$input.keyup(function() {
 
 					var input = $(this).val();
 
-					if (!input || input.length < 5)
+					if (!input || input.length < minInput || maxInput < input.length) {
+						$output.val('');
 						return;
+					}
 
-					// var matches = _.filter(words, word => {
-					// 	var match = charsOnly.test(word);
-					// 	if (match)
-					// 		match = match && _.every(charCounts, (count,char) => {
-					// 			match = new RegExp(`^.?[${char}]{0,${count}}.?$`).test(word);
-					// 			return match;
-					// 		});
-					// 	return match;
-					// });
-
-					var allChars = 'abcdefghijklmnopqrstuvwxyz';
 					var nonWordChars = _.difference(allChars.split(''), input.split(''));
 					var reNonWordChars = new RegExp(`[${nonWordChars}]`);
 
@@ -60,7 +64,7 @@
 					// search all words
 					var matches = _.filter(words, word => {
 						return (
-							word.length >= 3 &&
+							minWordSize <= word.length && word.length <= maxWordSize &&
 							// don't match word if it contains non-input letters
 							!reNonWordChars.test(word) &&
 							// don't match word if it contains more letters than available
@@ -68,7 +72,7 @@
 						);
 					});
 
-					$("#output").val(matches.join('\n'));
+					$output.val(matches.join('\n'));
 
 				});
 
