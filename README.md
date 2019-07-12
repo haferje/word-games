@@ -17,3 +17,7 @@ This can be used to assist you in completing word games, such as the mobile game
 1. Enter the given letters in the textbox.
 2. See the list of possible words that can be created with the letters.
 
+#### Dependencies
+
+- jQuery
+- Lodash
